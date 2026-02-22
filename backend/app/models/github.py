@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, HttpUrl
@@ -28,8 +29,17 @@ class RepositorySummary(BaseModel):
     homepage: Optional[HttpUrl] = None
 
 
+class RepoMode(str, Enum):
+    ENTIRE = "entire"  # All repos (not recommended)
+    TOP_10 = "top_10"  # Top 10 repos by stars
+    TOP_20 = "top_20"  # Top 20 repos by stars
+    SELECTED = "selected"  # User-selected repos
+
+
 class ProfileAnalysisRequest(BaseModel):
     github_url: HttpUrl
+    repo_mode: RepoMode = RepoMode.TOP_20
+    selected_repo_names: Optional[List[str]] = None  # Required if repo_mode is SELECTED
 
 
 class GitHubProfileSummary(BaseModel):

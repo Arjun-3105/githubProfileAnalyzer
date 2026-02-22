@@ -5,7 +5,9 @@ import { useState } from "react";
 interface JobMatchResult {
   match_score: number;
   missing_skills: string[];
+  missing_signals?: string[];
   suggested_projects: string[];
+  repo_suggestions?: string[];
   resume_positioning_advice: string;
 }
 
@@ -92,23 +94,53 @@ export default function JobMatchPage() {
           </div>
           <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
             <h2 className="mb-1 text-sm font-semibold text-white">
-              Missing skills
+              Missing Signals & Skills
             </h2>
-            <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
-              {result.missing_skills.map((skill) => (
-                <li key={skill}>{skill}</li>
-              ))}
-            </ul>
+            <div className="space-y-3">
+              <div>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Missing Skills</span>
+                <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
+                  {result.missing_skills.map((skill) => (
+                    <li key={skill}>{skill}</li>
+                  ))}
+                </ul>
+              </div>
+              {result.missing_signals && result.missing_signals.length > 0 && (
+                <div>
+                  <span className="text-xs font-semibold text-red-400 uppercase tracking-wider block mb-1">Missing Evidence/Signals</span>
+                  <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
+                    {result.missing_signals.map((signal) => (
+                      <li key={signal}>{signal}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
           <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
             <h2 className="mb-1 text-sm font-semibold text-white">
-              Suggested projects
+              Actionable Fixes
             </h2>
-            <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
-              {result.suggested_projects.map((proj) => (
-                <li key={proj}>{proj}</li>
-              ))}
-            </ul>
+            <div className="space-y-3">
+              {result.repo_suggestions && result.repo_suggestions.length > 0 && (
+                <div>
+                  <span className="text-xs font-semibold text-brand-light uppercase tracking-wider block mb-1">Highlight Existing Repos</span>
+                  <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
+                    {result.repo_suggestions.map((repo) => (
+                      <li key={repo}>{repo}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div>
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider block mb-1">Suggested New Projects</span>
+                <ul className="list-disc space-y-1 pl-4 text-xs text-slate-200">
+                  {result.suggested_projects.map((proj) => (
+                    <li key={proj}>{proj}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
           <div className="md:col-span-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4 text-xs text-slate-200">
             <h2 className="mb-2 text-sm font-semibold text-white">

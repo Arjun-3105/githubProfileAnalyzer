@@ -1,0 +1,28 @@
+# Detailed Task List
+
+- [ ] 1. Layer 0 — User Auth
+  - [ ] Create `backend/app/models/auth.py` and models
+  - [ ] Implement `backend/app/core/db.py`
+  - [ ] Implement `backend/app/core/security.py`
+  - [ ] Create `backend/app/routers/auth.py`
+  - [ ] Update [backend/app/main.py](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/backend/app/main.py)
+  - [ ] Create frontend login, register, and `AuthContext`
+  - [ ] Update frontend layout
+- [ ] 2. Backend — Data Models & Snapshots
+  - [ ] Update `backend/app/models/snapshot.py`
+  - [ ] Update [backend/app/models/llm.py](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/backend/app/models/llm.py)
+  - [ ] Create `backend/app/services/snapshot_service.py`
+- [ ] 3. Backend — Scoring Modules
+  - [ ] Create `backend/app/scoring/delta.py`
+  - [ ] Create `backend/app/scoring/simulator.py`
+  - [ ] Create `backend/app/scoring/skill_attribution.py`
+  - [ ] Create `backend/app/routers/snapshots.py`
+- [ ] 4. Backend Routine Updates
+  - [ ] Update [backend/app/routers/analysis.py](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/backend/app/routers/analysis.py) to support auth and workflows
+  - [ ] Update `backend/app/services/job_match.py` to use latest snapshot
+- [ ] 5. Frontend UI Modifications
+  - [ ] Update [frontend/app/analyze/page.tsx](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/frontend/app/analyze/page.tsx)
+  - [ ] Update [frontend/app/dashboard/page.tsx](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/frontend/app/dashboard/page.tsx)
+  - [ ] Update [frontend/app/job-match/page.tsx](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/frontend/app/job-match/page.tsx)
+- [ ] 6. Verification and Review
+  - [ ] Perform step-by-step manual verifications as per plan.

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import analysis, job_match, readme_tools, roadmap
+from app.routers import analysis, job_match, readme_tools, roadmap, auth, snapshots
 
 
 def create_app() -> FastAPI:
@@ -10,14 +10,24 @@ def create_app() -> FastAPI:
         version="0.1.0",
     )
 
+    @app.on_event("startup")
+    async def startup_event():
+        from app.core.db import init_db
+        await init_db()
+
+    from starlette.middleware.sessions import SessionMiddleware
+    app.add_middleware(SessionMiddleware, secret_key="your-secret-key-for-sessions")
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
+    app.include_router(auth.router)
+    app.include_router(snapshots.router)
     app.include_router(analysis.router, prefix="/api")
     app.include_router(job_match.router, prefix="/api")
     app.include_router(readme_tools.router, prefix="/api")

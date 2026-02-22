@@ -11,6 +11,17 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Filter out placeholder values
+        if self.github_token and self.github_token.lower() in (
+            "your_github_token_here",
+            "none",
+            "",
+            "placeholder",
+        ):
+            self.github_token = None
+
 
 settings = Settings()  # type: ignore[arg-type]
 

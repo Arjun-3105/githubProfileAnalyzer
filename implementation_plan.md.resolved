@@ -1,0 +1,126 @@
+# Final Implementation Plan
+
+This plan addresses the important gaps, high-leverage additions, and fundamentally introduces **Layer 0 - User Auth and Decision Intelligence Features** for the Developer Assessment AI.
+
+## Proposed Changes
+
+### Layer 0 — User Auth (Prequisite)
+**Tech stack**: `python-jose[cryptography]`, `passlib[bcrypt]`, `aiosqlite` for User Auth. Frontend uses `httpOnly` cookie and `AuthContext`.
+
+#### Backend Data & Auth Logic
+- **[NEW] backend/app/models/auth.py**: Create Pydantic models: `UserRegister`, `UserLogin`, `TokenResponse`, `UserPublic`.
+- **[NEW] backend/app/core/db.py**: SQLite helper with single `users` table (`id`, `email`, `hashed_password`, `display_name`, `created_at`).
+- **[NEW] backend/app/core/security.py**: Functions to hash passwords (`hash_password`), verify (`verify_password`), create/decode JWT access tokens, and a `get_current_user` FastAPI dependency.
+- **[NEW] backend/app/routers/auth.py**:
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+  - `POST /api/auth/logout`
+  - `GET /api/auth/me`
+- **[MODIFY] backend/app/main.py**: 
+  - Add startup event `init_db()`.
+  - Register `auth` router.
+
+#### Frontend Auth
+- **[NEW] frontend/app/login/page.tsx**: Login form (email + password).
+- **[NEW] frontend/app/register/page.tsx**: Register form.
+- **[NEW] frontend/app/context/AuthContext.tsx**: React context providing `user`, `login()`, `logout()`, `register()`.
+- **[MODIFY] frontend/app/layout.tsx**: Wrap app with `AuthProvider`. Add Login/Logout and username to the Navigation bar.
+
+---
+
+### Backend — Data Models & Snapshots
+
+#### [MODIFY] backend/app/models/snapshot.py
+- **New Pydantic Models**:
+  - `AnalysisSnapshot` (username, timestamp, scores, red_flags, repo_scope, archetype, recruiter shortlist, `schema_version`, `app_version`)
+  - `ScoreDelta` (dimension and final score deltas, stagnation flag, direction, attribution strings)
+  - `CounterfactualScenario`, `CounterfactualSimulation` (scenarios + best_action + fastest path threshold)
+  - `SkillEvidence`, `SkillAttributionResult` (probabilistic skill evidence list)
+
+#### [MODIFY] backend/app/models/llm.py
+- **Enhance JobMatchResult**: Add `missing_signals: list[str]` and `repo_suggestions: list[str]`.
+
+#### [NEW] backend/app/services/snapshot_service.py
+- File-based JSON store logic under `backend/snapshots/{username}.json` (migrating to DB gracefully later).
+- Functions: `save_snapshot`, `load_snapshots`, `get_latest_snapshot`, `get_previous_snapshot`. Support ground truth lock checks here to invalidate deltas if `repo_scope` mismatches.
+
+---
+
+### Backend — Scoring Modules (Decision Intelligence)
+
+#### [NEW] backend/app/scoring/delta.py
+- `compute_delta(current: AnalysisSnapshot, previous: AnalysisSnapshot | None) -> ScoreDelta`
+- Handles zero deltas/flags for first-time runs.
+- Calculates per-dimension and final deltas. Generates attribution strings. Identifies stagnation scenarios (no change < 2 and > 7 days).
+
+#### [NEW] backend/app/scoring/simulator.py
+- `simulate_improvements(profile, scores) -> CounterfactualSimulation`
+- Pure Python logic to test mutations (`has_readme=True`, `has_tests=True`, `has_ci=True`, etc.).
+- Calculates **`effort_hours`** to determine and rank by **`roi`** (impact per effort hour). Calculates fastest path.
+
+#### [NEW] backend/app/scoring/skill_attribution.py
+- `compute_skill_attribution(profile) -> SkillAttributionResult`
+- Deterministic rule-based engine mapping repos to skills (`Backend`, `ML/AI`, `DevOps`, `Frontend`, `Database`, `Testing`).
+- Assigns probabilistic **skill confidence** scores instead of generic booleans.
+
+#### [NEW] backend/app/routers/snapshots.py
+- Expose snapshot & analysis history APIs (must require authentication / JWT checks securely):
+  - `GET /api/snapshots/{username}`
+  - `GET /api/snapshots/{username}/latest`
+  - `GET /api/snapshots/{username}/delta`
+  - `GET /api/simulate/{username}`
+  - `GET /api/skills/{username}`
+
+---
+
+### Backend Updates & Routing
+
+#### [MODIFY] backend/app/routers/analysis.py
+- Use optional `Authorization` header via `get_current_user` (allow guests).
+- Upon analysis completion:
+  - Save `AnalysisSnapshot` (tied to `current_user` if authenticated).
+  - Execute `compute_delta()`, `simulate_improvements()`, and `compute_skill_attribution()`.
+  - Include deltas, simulations, and attributions in the returned JSON.
+  - LLM fallback deterministic path baked in on 429/failure.
+  - "Why NOT Shortlisted?" classifier and Memory Compaction mechanisms triggered.
+
+#### [MODIFY] backend/app/main.py
+- Register `snapshots` router alongside `auth` and `analysis`.
+
+#### [MODIFY] backend/app/services/job_match.py
+- Utilize the latest snapshot via `snapshot_service` instead of re-fetching GitHub data unnecessarily.
+- Pass generated `skill_attribution` signals to the improved `JobMatchResult` prompt.
+
+---
+
+### Frontend Features
+
+#### [MODIFY] frontend/app/analyze/page.tsx
+- Integrate `Delta Badges` next to score dimensions (+X / -X colors).
+- Integrate **Counterfactual Simulator panel** displaying projected ROI ranks and paths to 85+.
+- Integrate **Skill Attribution panel** displaying backend-provided evidence for detected skills.
+- Show `major_concerns` and `critical_improvements` prominently in a Recruiter section.
+
+#### [MODIFY] frontend/app/dashboard/page.tsx
+- Remove static placeholders. 
+- Input username to fetch `/api/snapshots/{username}` and inject into radar/trend charts.
+- Render Snapshot History table and show deltas between recent snapshots.
+
+#### [MODIFY] frontend/app/job-match/page.tsx
+- Integrate and visualize improved the match %, `missing_signals`, existing `repo_suggestions`, and layout updates for AI evaluation.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+*While no existing suite stands, manual verifications heavily cover workflows along with snapshot structural testing.*
+Fallback, Ground Truth Locks, and Ownership verification tests (as outlined previously) are still inherently checked during development interactions.
+
+### Manual Verification
+1. **Start backend:** [.\start-backend.ps1](file:///c:/Users/Arjun/Desktop/Personal/Dev/Python/AI/githubProfileAnalyzer/start-backend.ps1)
+2. **First Analysis:** Navigate to `http://localhost:3000/analyze`, supply `https://github.com/torvalds`. Expect NO delta badges, 5 simulation scenarios, Linux Kernel skill evidence. Verify snapshot saves physically to `.json`.
+3. **Second Analysis:** Re-run above. Expect delta badges indicating 0 change, physical `.json` now houses 2 historical entries.
+4. **Dashboard Check:** Visit `http://localhost:3000/dashboard`, supply `torvalds`. Expect real radar data matching snapshots and populated 2-row table.
+5. **Job Match Check:** Visit `http://localhost:3000/job-match`, supply GitHub URL + description, verify Match %, missing signals, and suggestions render.
+6. **API Confirmation:** Probe `curl http://localhost:8000/api/snapshots/torvalds` ensuring an array housing exactly 2 full `AnalysisSnapshot` objects returning properly.

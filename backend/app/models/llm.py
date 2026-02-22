@@ -22,7 +22,9 @@ class JobMatchRequest(BaseModel):
 class JobMatchResult(BaseModel):
     match_score: float
     missing_skills: list[str]
+    missing_signals: list[str]
     suggested_projects: list[str]
+    repo_suggestions: list[str]
     resume_positioning_advice: str
 
 
