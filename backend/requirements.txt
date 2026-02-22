@@ -13,3 +13,6 @@ tree-sitter-python
 authlib
 asyncpg
 python-jose[cryptography]
+passlib
+pydantic[email]
+bcrypt
