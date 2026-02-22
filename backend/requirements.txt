@@ -12,3 +12,4 @@ tree-sitter
 tree-sitter-python
 authlib
 asyncpg
+python-jose[cryptography]
