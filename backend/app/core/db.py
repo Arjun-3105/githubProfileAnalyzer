@@ -23,18 +23,21 @@ async def init_db():
         print("WARNING: DATABASE_URL not set, skipping DB init.")
         return
         
-    async with get_db_connection() as db:
-        await db.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id TEXT PRIMARY KEY,
-                email TEXT UNIQUE,
-                hashed_password TEXT,
-                display_name TEXT,
-                created_at TEXT,
-                auth_provider TEXT DEFAULT 'local',
-                provider_id TEXT
-            )
-        """)
+    try:
+        async with get_db_connection() as db:
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id TEXT PRIMARY KEY,
+                    email TEXT UNIQUE,
+                    hashed_password TEXT,
+                    display_name TEXT,
+                    created_at TEXT,
+                    auth_provider TEXT DEFAULT 'local',
+                    provider_id TEXT
+                )
+            """)
+    except Exception as e:
+        print(f"WARNING: DB initialization failed, but app will continue: {e}")
 
 async def get_user_by_email(email: str):
     async with get_db_connection() as db:
