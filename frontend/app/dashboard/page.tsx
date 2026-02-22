@@ -47,7 +47,8 @@ export default function DashboardPage() {
     setDelta(null);
 
     try {
-      const res = await fetch(`http://localhost:8000/api/snapshots/${usernameInput}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+      const res = await fetch(`${apiUrl}/api/snapshots/${usernameInput}`, {
         credentials: "include"
       });
       if (res.status === 403) throw new Error("Not authorized to view these snapshots");
@@ -57,7 +58,8 @@ export default function DashboardPage() {
       setSnapshots(data);
 
       if (data.length > 0) {
-        const deltaRes = await fetch(`http://localhost:8000/api/snapshots/${usernameInput}/delta`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+        const deltaRes = await fetch(`${apiUrl}/api/snapshots/${usernameInput}/delta`, {
           credentials: "include"
         });
         if (deltaRes.ok) {

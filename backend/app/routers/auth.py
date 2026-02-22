@@ -178,7 +178,7 @@ async def _process_oauth_login(email: str, display_name: str, provider: str, pro
 
     access_token = create_access_token(data={"sub": db_user["id"]})
     
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+    frontend_url = os.environ.get("FRONTEND_URL", "https://github-profile-analyzer-lime.vercel.app")
     response = RedirectResponse(url=f"{frontend_url}/")
     response.set_cookie(
         key="access_token",

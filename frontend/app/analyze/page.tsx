@@ -86,7 +86,8 @@ export default function AnalyzePage() {
         if (!username) return;
 
         setLoadingRepos(true);
-        const resp = await fetch(`http://localhost:8000/api/analyze/repos/${username}`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+        const resp = await fetch(`${apiUrl}/api/analyze/repos/${username}`);
         if (!resp.ok) {
           throw new Error("Failed to fetch repos");
         }
@@ -118,7 +119,8 @@ export default function AnalyzePage() {
         body.selected_repo_names = selectedRepos;
       }
 
-      const resp = await fetch("http://localhost:8000/api/analyze", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+      const resp = await fetch(`${apiUrl}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -23,7 +23,8 @@ export default function JobMatchPage() {
     setError(null);
     setResult(null);
     try {
-      const resp = await fetch("http://localhost:8000/api/job-match", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+      const resp = await fetch(`${apiUrl}/api/job-match`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

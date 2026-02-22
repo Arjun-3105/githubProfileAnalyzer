@@ -31,7 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const checkUser = async () => {
         try {
-            const res = await fetch("http://localhost:8000/api/auth/me", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+            const res = await fetch(`${apiUrl}/api/auth/me`, {
                 headers: { "Content-Type": "application/json" },
                 credentials: "include"
             });
@@ -50,7 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (email: string, password: string): Promise<boolean> => {
         try {
-            const res = await fetch("http://localhost:8000/api/auth/login", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+            const res = await fetch(`${apiUrl}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -68,7 +70,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const register = async (email: string, password: string, display_name: string): Promise<boolean> => {
         try {
-            const res = await fetch("http://localhost:8000/api/auth/register", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+            const res = await fetch(`${apiUrl}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -86,7 +89,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = async () => {
         try {
-            await fetch("http://localhost:8000/api/auth/logout", {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://githubprofileanalyzer-paxc.onrender.com";
+            await fetch(`${apiUrl}/api/auth/logout`, {
                 method: "POST",
                 credentials: "include",
             });
