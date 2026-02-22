@@ -180,3 +180,11 @@ tree-sitter-*/
 
 # Keep example env file
 !.env.example
+
+# Markdown and Scripts
+*.md
+!README.md
+*.ps1
+*.md.resolved
+
+
