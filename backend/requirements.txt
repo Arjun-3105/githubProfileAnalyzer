@@ -16,3 +16,4 @@ python-jose[cryptography]
 passlib
 pydantic[email]
 bcrypt
+itsdangerous
