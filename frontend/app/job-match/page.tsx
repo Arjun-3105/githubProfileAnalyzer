@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Particles from "../components/Particles";
 
 interface JobMatchResult {
   match_score: number;
@@ -46,7 +47,9 @@ export default function JobMatchPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <>
+      <Particles />
+      <div className="relative z-10 space-y-8 pt-24 pb-12 max-w-7xl mx-auto px-6">
       <section className="space-y-3">
         <h1 className="text-2xl font-semibold text-white">Job Match Mode</h1>
         <p className="text-sm text-slate-300">
@@ -151,7 +154,8 @@ export default function JobMatchPage() {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

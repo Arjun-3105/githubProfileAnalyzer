@@ -1,76 +1,166 @@
-import Link from 'next/link';
+"use client";
+
+import Link from "next/link";
+import { motion, useScroll } from "framer-motion";
+import { ArrowRight, Sparkles, Target, Zap, LayoutDashboard, GitBranch } from "lucide-react";
+import dynamic from 'next/dynamic';
+import LoadingScreen from "./components/LoadingScreen";
+
+const Scene = dynamic(() => import('./components/Scene'), { ssr: false });
 
 export default function LandingPage() {
+  const { scrollYProgress } = useScroll();
+
+  const container: any = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.5 },
+    },
+  };
+
+  const item: any = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  };
+
+  const scrollVariant: any = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden flex flex-col items-center justify-center font-sans">
-      {/* Background Glowing Orbs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-dark/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[40%] left-[50%] translate-x-[-50%] w-[80%] h-[20%] bg-white/5 rounded-full blur-[150px] pointer-events-none" />
+    <div className="relative overflow-hidden w-full bg-black">
+      
+      {/* GitHub-themed Loading Screen */}
+      <LoadingScreen />
 
-      <main className="relative z-10 flex flex-col items-center max-w-5xl mx-auto px-6 py-20 text-center">
-        {/* Animated Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md shadow-2xl">
-          <span className="flex h-2 w-2 rounded-full bg-brand-light animate-pulse shadow-[0_0_10px_rgba(96,165,250,0.8)]"></span>
-          <span className="text-[11px] font-semibold text-slate-300 tracking-wider uppercase">AI-Powered Developer Assessment</span>
-        </div>
+      {/* Fixed Background 3D Scene */}
+      <div className="fixed inset-0 z-[1] h-screen w-screen pointer-events-auto">
+        {/* Subtle overlay — pointer-events-none so clicks pass through */}
+        <div className="absolute inset-0 bg-black/20 z-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
+        <Scene scrollProgress={scrollYProgress} />
+      </div>
 
-        {/* Hero Title */}
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-          Turn your <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400">GitHub</span> into a <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-light via-brand to-brand-dark transform inline-block">
-            recruiter-ready portfolio.
-          </span>
-        </h1>
+      {/* Scrollable Content Layer */}
+      <main className="relative z-10 flex flex-col items-center w-full px-4 text-center pointer-events-none min-h-[400vh]">
+        
+        {/* Hero Section */}
+        <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col items-center max-w-4xl pt-[15vh] min-h-[100vh]">
+          <motion.div variants={item} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md shadow-2xl">
+            <Sparkles className="w-3.5 h-3.5 text-brand-light" />
+            <span className="text-[11px] font-semibold text-zinc-300 tracking-wider uppercase">
+              Next-Gen AI Portfolio Analysis
+            </span>
+          </motion.div>
 
-        {/* Subtitle */}
-        <p className="max-w-2xl text-lg md:text-xl text-slate-400 mb-10 leading-relaxed font-medium">
-          HireLens AI analyzes your GitHub like a hiring manager. Get an explainable score on structure, depth, scalability, and consistency, plus a concrete, actionable roadmap to level up.
-        </p>
+          <motion.h1 variants={item} className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] drop-shadow-2xl">
+            Code Speaks. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-light via-brand to-emerald-400">
+              We Translate.
+            </span>
+          </motion.h1>
 
-        {/* Calls to Action */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <Link
-            href="/login"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-black font-semibold text-lg hover:bg-slate-200 transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25)] flex items-center justify-center gap-2"
+          <motion.p variants={item} className="max-w-xl text-lg md:text-xl text-zinc-200 mb-10 leading-relaxed font-medium drop-shadow-lg">
+            Instantly turn your fragmented GitHub history into a cohesive, recruiter-ready profile. Get scored on architecture, scale, and deeply technical metrics.
+          </motion.p>
+
+          <motion.div variants={item} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pointer-events-auto">
+            <Link
+              href="/analyze"
+              className="group relative px-8 py-4 rounded-full bg-white text-black font-semibold text-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                Analyze Profile Free
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-zinc-200 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            </Link>
+            <Link
+              href="/login"
+              className="px-8 py-4 rounded-full bg-black/40 border border-white/20 text-white font-semibold text-lg hover:bg-white/10 transition-all backdrop-blur-md"
+            >
+              Log in / Save History
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Bento Grid Features - Scroll Reveals */}
+        <div className="w-full max-w-5xl mt-[60vh] grid grid-cols-1 md:grid-cols-3 gap-6 text-left pb-64 pointer-events-auto">
+          
+          <motion.div 
+            variants={scrollVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-2 p-10 rounded-3xl bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 transition-colors backdrop-blur-xl relative overflow-hidden group shadow-2xl"
           >
-            Get Started Free
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-          </Link>
-          <Link
-            href="/analyze"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 text-white font-semibold text-lg hover:bg-white/10 transition-all backdrop-blur-md"
-          >
-            Try Demo Mode
-          </Link>
-        </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-brand/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <Zap className="w-10 h-10 text-brand-light mb-12" />
+              <div>
+                <h3 className="text-3xl font-bold text-white mb-3">Instant Engineering Context</h3>
+                <p className="text-zinc-400 text-lg">Our LLM engine pulls your Top 20 repositories and summarizes complex architectural decisions into a digestible format that hiring managers actually understand.</p>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-24 text-left w-full">
-          <div className="group relative p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-brand/50 transition-colors backdrop-blur-md overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-brand/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-brand/20 text-brand-light">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <motion.div 
+            variants={scrollVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-1 p-10 rounded-3xl bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 transition-colors backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <Target className="w-10 h-10 text-emerald-400 mb-12" />
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-3">Identify Red Flags</h3>
+                <p className="text-zinc-400">Discover monolithic files and missing tests before recruiters do.</p>
+              </div>
             </div>
-            <h3 className="relative z-10 text-xl font-bold text-white mb-3">Recruiter-grade scoring</h3>
-            <p className="relative z-10 text-slate-400 text-sm leading-relaxed">Deterministic rules across 6 dimensions give you a clear, objective analysis of your codebase quality.</p>
-          </div>
-          <div className="group relative p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-brand/50 transition-colors backdrop-blur-md overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-brand/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-brand/20 text-brand-light">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </motion.div>
+
+          <motion.div 
+            variants={scrollVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-1 p-10 rounded-3xl bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 transition-colors backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <LayoutDashboard className="w-10 h-10 text-purple-400 mb-12" />
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-3">Live Simulation</h3>
+                <p className="text-zinc-400">Test how adding tests or refactoring repos improves your overall score.</p>
+              </div>
             </div>
-            <h3 className="relative z-10 text-xl font-bold text-white mb-3">Red flags surfaced</h3>
-            <p className="relative z-10 text-slate-400 text-sm leading-relaxed">Spot undocumented code, monolithic files, and missing unit tests before a hiring manager does.</p>
-          </div>
-          <div className="group relative p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-brand/50 transition-colors backdrop-blur-md overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-brand/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-brand/20 text-brand-light">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </motion.div>
+
+          <motion.div 
+            variants={scrollVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-2 p-10 rounded-3xl bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 transition-colors backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <GitBranch className="w-10 h-10 text-zinc-300 mb-12" />
+              <div>
+                <h3 className="text-3xl font-bold text-white mb-3">Automated Roadmap</h3>
+                <p className="text-zinc-400 text-lg">Stop guessing what to build next. HireLens gives you an actionable, prioritized roadmap based on your weakest engineering dimensions to boost your readiness level rapidly.</p>
+              </div>
             </div>
-            <h3 className="relative z-10 text-xl font-bold text-white mb-3">Roadmap to ready</h3>
-            <p className="relative z-10 text-slate-400 text-sm leading-relaxed">Receive an AI-generated, prioritized roadmap to systematically improve your portfolio score over time.</p>
-          </div>
+          </motion.div>
+
         </div>
       </main>
     </div>

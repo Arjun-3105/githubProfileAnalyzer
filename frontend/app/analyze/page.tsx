@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import Particles from "../components/Particles";
 
 interface AnalyzeResponse {
   scores: {
@@ -144,7 +145,9 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="space-y-8">
+    <>
+      <Particles />
+      <div className="relative z-10 space-y-8 pt-24 pb-12 max-w-7xl mx-auto px-6">
       <section className="space-y-3">
         <h1 className="text-2xl font-semibold text-white">Analyze GitHub</h1>
         <p className="text-sm text-slate-300">
@@ -452,7 +455,8 @@ export default function AnalyzePage() {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

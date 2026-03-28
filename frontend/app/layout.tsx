@@ -2,37 +2,33 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-outfit",
+});
 
 export const metadata = {
-  title: "HireLens AI – GitHub Intelligence Engine",
-  description: "Recruiter-grade GitHub portfolio analysis and insights.",
+  title: "HireLens AI – Premium Portfolio Intelligence",
+  description: "Recruiter-grade GitHub portfolio analysis, reimagined.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-slate-950 text-slate-50">
+    <html lang="en" className={`${outfit.variable} font-sans`}>
+      <body className="relative min-h-screen bg-black text-zinc-50 selection:bg-brand selection:text-white">
+        <div className="bg-noise fixed inset-0 z-[50] pointer-events-none mix-blend-overlay opacity-[0.03]"></div>
         <AuthProvider>
-          <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6">
-            <header className="mb-8 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand to-brand-light text-xl font-bold">
-                  HL
-                </div>
-                <div>
-                  <div className="text-sm font-semibold tracking-wide text-brand-light">
-                    HireLens AI
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    Recruiter-grade GitHub Intelligence Engine
-                  </p>
-                </div>
+          <NavBar />
+          <div className="relative z-10 mx-auto flex min-h-screen flex-col">
+            <main className="flex-1 w-full">{children}</main>
+            <footer className="w-full max-w-7xl mx-auto px-6 py-8 mt-8 border-t border-zinc-800/50 text-xs text-zinc-500 font-medium relative z-20">
+              <div className="flex items-center justify-between">
+                <span>© {new Date().getFullYear()} HireLens AI</span>
+                <span>Crafted with Fastapi & Next.js</span>
               </div>
-              <NavBar />
-            </header>
-            <main className="flex-1">{children}</main>
-            <footer className="mt-8 border-t border-slate-800 pt-4 text-xs text-slate-500">
-              Built with FastAPI, Next.js, TailwindCSS, and OpenRouter.
             </footer>
           </div>
         </AuthProvider>
@@ -40,4 +36,3 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
-

@@ -6,6 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip
 } from "recharts";
 import { useAuth } from "../context/AuthContext";
+import Particles from "../components/Particles";
 
 interface AnalysisSnapshot {
   timestamp: string;
@@ -96,7 +97,9 @@ export default function DashboardPage() {
   }));
 
   return (
-    <div className="space-y-6">
+    <>
+      <Particles />
+      <div className="relative z-10 space-y-6 pt-24 pb-12 max-w-7xl mx-auto px-6">
       <header className="space-y-3">
         <h1 className="text-2xl font-semibold text-white">Portfolio Dashboard</h1>
         <p className="text-sm text-slate-300">
@@ -234,6 +237,7 @@ export default function DashboardPage() {
           </section>
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }
